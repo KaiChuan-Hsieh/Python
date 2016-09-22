@@ -26,12 +26,6 @@ def merge(listA, listB):
 def mergeSort(myList):
     if len(myList) == 1:
         return myList
-    if len(myList) == 2:
-        if myList[0] > myList[1]:
-            tmp = myList[0]
-            myList[0] = myList[1]
-            myList[1] = tmp
-        return myList
 
     A = mergeSort(myList[:len(myList)/2])
     B = mergeSort(myList[len(myList)/2:])
