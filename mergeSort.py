@@ -3,11 +3,10 @@ def merge(listA, listB):
     j = 0
     c = []
     while i < len(listA) and j < len(listB):
-        while i < len(listA) and j < len(listB) and listA[i] <= listB[j]:
+        if listA[i] <= listB[j]:
             c.append(listA[i])
             i += 1
-
-        while i < len(listA) and j < len(listB) and listB[j] <= listA[i]:
+        else:
             c.append(listB[j])
             j += 1
 
@@ -24,6 +23,7 @@ def merge(listA, listB):
 
 
 def mergeSort(myList):
+    """Sorting an array of numbers by merge sort"""
     if len(myList) == 1:
         return myList
 
