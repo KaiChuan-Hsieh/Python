@@ -1,25 +1,30 @@
-def CountSplitInv(B, C):
+def CountSplitInv(B, C, D):
     i = 0
     j = 0
+    k = 0
     count = 0
 
     while i < len(B) and j < len(C):
         if B[i] <= C[j]:
-            D.append(B[i])
+            D[k] = (B[i])
             i += 1
+            k += 1
         else:
-            D.append(C[j])
+            D[k] = C[j]
             j += 1
+            k += 1
             count += len(B) - i
 
     if i < len(B):
         while i < len(B):
-            D.append(B[i])
+            D[k] = B[i]
             i += 1
+            k += 1
     elif j < len(C):
         while j < len(C):
-            D.append(C[j])
+            D[k] = C[j]
             j += 1
+            k += 1
 
     return count
 
@@ -34,7 +39,6 @@ def SortAndCount(A):
 
     X = SortAndCount(B)
     Y = SortAndCount(C)
-    Z = CountSplitInv(B, C)
+    Z = CountSplitInv(B, C, A)
 
     return X + Y + Z
-    
