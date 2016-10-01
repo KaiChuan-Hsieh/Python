@@ -47,37 +47,31 @@ class AppFrame(Frame):
         self.countDownText.grid(row=1, column=0)
 
         self.onoff = Button(self)
-        if (getCount() == 0):
-            self.onoff['text'] = "Start"
-            self.onoff['command'] = self.startMethod
-        else:
-            self.onoff['text'] = "Stop"
-            self.onoff['command'] = self.stopMethod
-            self.inputField['state'] = DISABLED
         self.onoff.grid(row=1, column=1)
 
     def startMethod(self):
         inCount = self.inputField.get()
         setCount(int(inCount))
-        self.onoff['text'] = "Stop"
-        self.onoff['command'] = self.stopMethod
-        self.inputField['state'] = DISABLED
-        self.__appRunning = True
         self.startRunning()
         
     def stopMethod(self):
-        self.onoff['text'] = "Start"
-        self.onoff['command'] = self.startMethod
-        self.inputField['state'] = NORMAL
-        self.__appRunning = False
         removeCount()
+        self.startRunning()
 
     def startRunning(self):
         remainingCount = getCount()
         if remainingCount > 0:
+            self.onoff['text'] = "Stop"
+            self.onoff['command'] = self.stopMethod
+            self.inputField['state'] = DISABLED
             self.__appRunning = True
             self.remaining = 0
             self.countdown(10)
+        else:
+            self.onoff['text'] = "Start"
+            self.onoff['command'] = self.startMethod
+            self.inputField['state'] = NORMAL
+            self.__appRunning = False
 
     def countdown(self, remaining = None):
         if remaining is not None:
