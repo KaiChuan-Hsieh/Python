@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=reboot stress
+Comment=Verify reboot works properly
+Exec=sudo /usr/bin/reboot-stress
+Type=Application
+X-GNOME-Autostart-enabled=true
+Hidden=false
