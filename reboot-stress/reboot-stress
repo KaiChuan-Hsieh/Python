@@ -2,6 +2,44 @@
 
 from Tkinter import *
 import os
+import pwd
+
+def writeAutostart():
+    uid = os.getenv('SUDO_UID') or os.getenv('PKEXEC_UID')
+    if not uid:
+        sys.stderr.write('Unable to determine invoking user\n')
+        sys.exit(1)
+
+    username = pwd.getpwuid(int(uid)).pw_name
+    default_config_directory = os.path.expanduser('~{0}/.config'
+                                                      .format(username))
+    config_directory = os.getenv('XDG_CONFIG_HOME',
+                                     default_config_directory)
+    autostart_directory = os.path.join(config_directory, 'autostart')
+    if not os.path.exists(autostart_directory):
+        os.makedirs(autostart_directory)
+
+    fpath = "/home/" + username + "/.config/autostart/reboot-stress.desktop"
+    if not os.path.exists(fpath):
+        f = open(fpath, "w")
+        f.write("[Desktop Entry]\n")
+        f.write("Name=reboot stress\n")
+        f.write("Comment=Verify reboot works properly\n")
+        f.write("Exec=sudo /usr/bin/reboot-stress\n")
+        f.write("Type=Application\n")
+        f.write("X-GNOME-Autostart-enabled=true\n")
+        f.write("Hidden=false")
+        f.close()
+
+def removeAutostart():
+    uid = os.getenv('SUDO_UID') or os.getenv('PKEXEC_UID')
+    if not uid:
+        sys.stderr.write('Unable to determine invoking user\n')
+        sys.exit(1)
+    username = pwd.getpwuid(int(uid)).pw_name
+    fpath = "/home/" + username + "/.config/autostart/reboot-stress.desktop"
+    if os.path.exists(fpath):
+        os.remove(fpath)
 
 def getCount():
     fpath = os.getenv('HOME') + "/count.txt"
@@ -13,7 +51,10 @@ def getCount():
         setCount(0)
         return 0
 
-    return int(rbuf[:-1])
+    if rbuf[:-1].isdigit():
+        return int(rbuf[:-1])
+
+    return 0
 
 def setCount(count):
     fpath = os.getenv('HOME') + "/count.txt"
@@ -52,10 +93,14 @@ class AppFrame(Frame):
     def startMethod(self):
         inCount = self.inputField.get()
         setCount(int(inCount))
+        os.system('systemctl disable hciuart')
+        writeAutostart()
         self.startRunning()
         
     def stopMethod(self):
         removeCount()
+        os.system('systemctl enable hciuart')
+        removeAutostart()
         self.startRunning()
 
     def startRunning(self):
@@ -91,6 +136,11 @@ class AppFrame(Frame):
             self.after(1000, self.countdown)
         
 if __name__ == '__main__':
+    # Verify that script is run as root
+    if os.getuid():
+        sys.stderr.write('This script needs superuser '
+                         'permissions to run correctly\n')
+        sys.exit(1)
     root = Tk()
     app = AppFrame(master=root)
     app.mainloop()
